@@ -133,10 +133,74 @@ A extends B
 加载B类，加载A类，B的static初始化，A的static初始化。创建对象：B的构造器调用，实例变量按次序初始化。执行构造器的其余部分。A的构造器调用，...。
 
 ### 内部类
+每个内部类都能独立的继承自一个接口的实现，无论外围类是否已经继承 。
+- 闭包
+通过**接口+内部类**实现，广泛用于**回调**函数中。
+  - 在JAVA中，内部类可以访问到外围类的变量、方法或者其它内部类等所有成员，即使它被定义成private了，但是外部类不能访问内部类中的变量。这样通过内部类就可以提供一种**代码隐藏和代码组织**的机制，并且这些被组织的代码段还可以自由地访问到包含该内部类的外围上下文环境。
+  ![](.img/callback.png)
+  - 回调的核心就是：回调方将本身即this传递给调用方.这样调用方就可以在调用完毕之后告诉回调方它想要知道的信息。
+![](.img/innerClass.png)
+![](.img/innerClass2.png)
+即通过Caller调用传入对象的increment方法时，实际上传入了匿名内部类对象，而该内部类实际上调用了外围类的increment方法。
+此外，Callee2类通过重写调用了increment方法，而如果它必须实现Incrementable接口，就**必须存在两个同名方法，而作用表现不同。** 它本身的increment方法并不是实现Incrementable。此时可以通过内部类来实现Incrementable。并且无需修改给外围类添加东西，也不需要修改接口。
+> 内部类Closure返回了一个Callee2的钩子（而非引用），是很安全的，**外部只能调用Callee2的increment方法**，而不能获取到其他信息。
+
 闭包、框架
 
 ### 容器
-
+在编写代码的时候并不知道会产生多少对象，因而数组无法存放。
+Collection是所有序列容器类的根接口，容器之间的共性通过迭代器实现，即实现Collection的类需要实现Iterator。
+![](.img/collection.png)
+#### List
+- ArrayList
+随机访问快，插入删除慢
+- LinkedList
+插入删除快，随机访问慢
+- Set
+通过值确定归属性
+  - HashSet
+  散列函数
+  - TreeSet
+  红黑树
+  - LinkedHashSet
 ### 注解
+三种标准注解（@Override、@Deprecated、@SuppressWarnings）和四种元注解
+![](.img/innotion.png)
 
+使用注解根据数据库表生成JavaBean
 ### 并发
+#### 多线程
+##### 实现方式
+- **Runnable接口**
+实现**Runnable接口**并实现run()方法
+- **Thread类**
+把Runnable对象传入**Thread类**，通过调用start方法启动
+- **Executor**
+在客户端和任务之间提供一个间接层，无须显示管理线程生命周期
+
+  ```java
+  ExecutorService exec = Executors.newCachedThreadPool();
+  for(int i = 0; i < 5; ++i){
+    exec.execute(new Liftoff()); //Liftoff实现了Runnable接口
+  }
+  exec.shutdown();
+  ```
+  - CachedThreadPool为每个任务创建一个线程
+  - FixedThreadPool预先分配线程数量，可能时复用
+  - SingleThreadExecuto线程数量为1，如果提交多个任务，则排队。并且按提交顺序完成。 
+  
+- **Callable接口**
+希望任务在完成时有返回值。类型参数表示的是从call()方法中返回的值，必须使用ExecutorService.submit()方法调用。submit()方法返回Future对象，对Callable返回结果的特定类型进行了从参数化，可以用isDone()查询Future是否完成，用get()获取结果（若未完成则阻塞）。
+![](.img/callable.png)
+![](.img/callable2.png)
+
+##### Join方法
+A调用B.join()，A被挂起直到B结束
+
+#### ThreadLocl
+在线程内部维护其自己的变量，别的线程不可见。
+比如Spring在为保证所有对数据库的CRUD都在一个数据库连接上进行，会设置为ThreadLocl。
+
+### 锁
+
+
