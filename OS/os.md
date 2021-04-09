@@ -64,6 +64,7 @@ CPU可以调度线程
 - **远程过程调用**
 
 ## IO模型
+
 - 阻塞IO
 - 非阻塞IO
 - IO多路复用
@@ -71,3 +72,5 @@ CPU可以调度线程
   - poll
   - epoll
 - 异步IO
+
+> [IO模型](https://zhuanlan.zhihu.com/p/115912936)
