@@ -63,3 +63,36 @@ TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
 
 ## 42. 接雨水
 双指针，左右各记录最高柱子，当左柱低于右柱时，左指针右移，期间若小于左最高，累加差值，大于则更新左最高，反之右边对称操作。
+
+## 54. 螺旋矩阵
+用top right left bottom四个变量维护，当超出边界的时候结束
+
+## 33. 搜索旋转排列数组
+二分搜索，当左边有序（**num[0]** <= nums[mid] ）: 若target 在 nums[0]和nums[mid]的值之间，r = mid - 1，否则在右边搜索 l = mid + 1。 右边有序（nums[mid] <= **nums[n - 1]**）同理。
+
+## 200. 岛屿数量
+深度优先搜索，从有岛屿（1）的**每一个地方**开始，把与之相连的置为0. 
+若题目不允许修改原数组，要增加标记数组。
+
+## 46. 全排列
+有标记数组：标记访问过的元素为true，从0开始遍历
+```c++
+ for(int i = 0; i < n; ++i){
+            if(mark[i])continue;
+            cur.push_back(nums[i]);
+            mark[i] = true;
+            dfs(nums,cur,mark,k+1,n);
+            cur.pop_back();
+            mark[i] = false;
+        }
+```
+无标记数组：从当前深度k开始，每次交换nums[k] 和 nums[i]，重置状态再交换回来。
+```c++
+for(int i = k; i < n; ++i){
+            
+            swap(nums[k],nums[i]);
+            dfs(nums,k+1,n);
+            swap(nums[k],nums[i]);
+        }
+```
+
