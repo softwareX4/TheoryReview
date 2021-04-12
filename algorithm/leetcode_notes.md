@@ -96,3 +96,19 @@ for(int i = k; i < n; ++i){
         }
 ```
 
+## 124. 二叉树中的最大路径和
+递归，每层的最大值等于左右结点的最大值和当前结点值的和（因为可以从左子树-> 根 -> 右子树），递归返回值为当前值加max（左子树，右子树），因为只能选择一条路径。
+
+## 23. 合并K个升序链表
+先写出合并两个有序链表的函数，然后按照归并算法两两合并。
+```c++
+ListNode * merge(vector<ListNode *> & list ,int l,int r){
+        if(l == r)return list[l];
+        if(l > r)return nullptr;
+        int mid = (l + r) / 2;
+        return mergeTwoLists(merge(list,l,mid),merge(list,mid + 1,r));
+    }
+```
+
+## 76.最小覆盖子串
+双指针，数组存储目标子串每个字符的出现次数，变量count保存还需几个字符，右指针扩张时判断count是否为0，为0则移动左指针（当l<r且当前字符多余时），之后更新最小值。
