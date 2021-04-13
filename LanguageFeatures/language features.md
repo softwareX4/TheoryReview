@@ -178,6 +178,9 @@ Collection是所有序列容器类的根接口，容器之间的共性通过迭�
 ![](.img/innotion.png)
 
 使用注解根据数据库表生成JavaBean
+
+### 动态代理
+https://www.zhihu.com/question/20794107
 ### 并发
 #### 多线程
 ##### 实现方式
