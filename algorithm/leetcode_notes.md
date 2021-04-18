@@ -1,12 +1,17 @@
 # leetcode 刷题笔记
 [TOC]
-## 3. 无重复的最长子串
-### 双指着
+## 题目
+### [3.无重复的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
+<div id="3"></div>
+
+#### 双指针
 vector存储对应ASCII码字符是否出现，双指针，无重复时右指针右移，更新最大值 left - right.一旦hash[right] != 0，左指针左移并将对应字符hash位置次数--，直到hash[right] 为0.
 
 
-## 25. K 个一组翻转链表
-### 链表指针操作
+### [25.K 个一组翻转链表](https://leetcode-cn.com/problems/reverse-nodes-in-k-group/)
+<div id="25"></div>
+
+#### 链表指针操作
 组内进行反转操作，之后把头结点连到前面一组的末尾，把尾结点连到后面一组的首部。
 指针：pre tail 
 增加伪头指针phead
@@ -14,8 +19,10 @@ vector存储对应ASCII码字符是否出现，双指针，无重复时右指针
 ![](.img/25-1.png)
 ![](.img/25-2.png)
 
-## 215. 数组中第K个最大元素
-### 快排判断下标
+### [215.数组中第K个最大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
+<div id="215"></div>
+
+#### 快排判断下标
 基本思想：第K大那么排序后它的下标应该为size - k。
 加速排序：随机选择一个下标与最右元素交换。
 > random() % ( R - L  + 1) + L 返回的是[L,R]之间的数
@@ -23,36 +30,50 @@ vector存储对应ASCII码字符是否出现，双指针，无重复时右指针
 以最右元素为标杆，将比它小的都放到左侧，最后再把最右元素与最终下标处交换，返回下标位置。
 若下标位置在左侧，小了，在右区间搜索，否则在左区间搜索。
 
-## 103. 二叉树的锯齿形层序遍历
-### 双端队列+方向标记
+### [103.二叉树的锯齿形层序遍历](https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/)
+<div id="103"></div>
+
+#### 双端队列+方向标记
 层序遍历：队列
 锯齿状：每层用一个双端队列，若正序则push_back，若逆序则push_front
 每层结束后至标志位为反向
 
-## 160. 相交链表
+### [160.相交链表](https://leetcode-cn.com/problems/intersection-of-two-linked-lists/)
+<div id="160"></div>
+
 #### 双指针相遇即交点
 基本思想： A和B两个链表长度可能不同，但是A+B和B+A的长度是相同的，所以遍历A+B和遍历B+A一定是同时结束。 如果A,B相交的话A和B有一段尾巴是相同的，所以两个遍历的指针一定会同时到达交点 如果A,B不相交的话两个指针就会同时到达A+B（B+A）的尾节点。
 
 p、q指针分别指向A、B链表头，当走到尾部时指向另一个链表的首部，直到p=q即为交点
 
-## 146. LRU 缓存机制
-### 哈希表 + 双端链表
+### [146.LRU 缓存机制](https://leetcode-cn.com/problems/lru-cache/)
+<div id="146"></div>
+
+#### 哈希表 + 双端链表
 哈希表存储链表的引用，get时从哈希表取，并且将结点moveToHead，put时检查是否存在，存在则moveToHead并更新值，不存在时若有空闲则addToHead并加入哈希表，无空闲则删除尾结点并删除哈希表引用，再addToHead并加入哈希表。
 
-## 15. 三数之和
-### 双指针
+### [15.三数之和](https://leetcode-cn.com/problems/3sum/)
+<div id="15"></div>
+
+#### 双指针
 排序，固定一个数，左右指针移动。
 去重：当前一个数=当前数时继续移动指针
 
-## 121. 买卖股票的最佳时机
-### 保存最低价格，计算最大差值
+### [121.买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+<div id="121"></div>
 
-## 53. 最大子序和
-### 动规
+#### 保存最低价格，计算最大差值
+
+### [53.最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+<div id="53"></div>
+
+#### 动规
 dp[i] = max(dp[i - 1] + nums[i],nums[i]);
 
-## 236. 二叉树的最近公共祖先
-### 递归
+### [236.二叉树的最近公共祖先](https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/)
+<div id="236"></div>
+
+#### 递归
 p、q结点在root异侧则为root，p=root且q在左或右，则为p，同理，则为q。
 递归，当碰到p或q结点时返回。
 ```c++
@@ -67,25 +88,35 @@ TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
     }
 ```
 
-## 42. 接雨水
-### 双指针，低端移动，小于最高累加，否则更新最高
+### [42.接雨水](https://leetcode-cn.com/problems/trapping-rain-water/)
+<div id="42"></div>
+
+#### 双指针，低端移动，小于最高累加，否则更新最高
 双指针，左右各记录最高柱子，当左柱低于右柱时，左指针右移，期间若小于左最高，累加差值，大于则更新左最高，反之右边对称操作。
 
-## 54. 螺旋矩阵
-### 维护判断边界
+### [54.螺旋矩阵](https://leetcode-cn.com/problems/spiral-matrix/)
+<div id="54"></div>
+
+#### 维护判断边界
 用top right left bottom四个变量维护，当超出边界的时候结束
 
-## 33. 搜索旋转排列数组
-### 二分
+### [33.搜索旋转排列数组](https://leetcode-cn.com/problems/search-in-rotated-sorted-array/)
+<div id="33"></div>
+
+#### 二分
 二分搜索，当左边有序（**num[0]** <= nums[mid] ）: 若target 在 nums[0]和nums[mid]的值之间，r = mid - 1，否则在右边搜索 l = mid + 1。 右边有序（nums[mid] <= **nums[n - 1]**）同理。
 
-## 200. 岛屿数量
-### dfs
+### [200.岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+<div id="200"></div>
+
+#### dfs
 深度优先搜索，从有岛屿（1）的**每一个地方**开始，把与之相连的置为0. 
 若题目不允许修改原数组，要增加标记数组。
 
-## 46. 全排列
-### dfs 
+### [46.全排列](https://leetcode-cn.com/problems/permutations/)
+<div id="46"></div>
+
+#### dfs 
 有标记数组：标记访问过的元素为true，从0开始遍历
 ```c++
  for(int i = 0; i < n; ++i){
@@ -107,12 +138,16 @@ for(int i = k; i < n; ++i){
         }
 ```
 
-## 124. 二叉树中的最大路径和
-### 递归更新最大值，返回左右子树最大值+root
+### [124.二叉树中的最大路径和](https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/)
+<div id="124"></div>
+
+#### 递归更新最大值，返回左右子树最大值+root
 递归，每层的最大值等于左右结点的最大值和当前结点值的和（因为可以从左子树-> 根 -> 右子树），递归返回值为当前值加max（左子树，右子树），因为只能选择一条路径。
 
-## 23. 合并K个升序链表
-### 归并，两两合并
+### [23.合并K个升序链表](https://leetcode-cn.com/problems/merge-k-sorted-lists/)
+<div id="23"></div>
+
+#### 归并，两两合并
 先写出合并两个有序链表的函数，然后按照归并算法两两合并。
 ```c++
 ListNode * merge(vector<ListNode *> & list ,int l,int r){
@@ -123,21 +158,29 @@ ListNode * merge(vector<ListNode *> & list ,int l,int r){
     }
 ```
 
-## 76.最小覆盖子串
-### 双指针
+### [76.最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring/)
+<div id="76"></div>
+
+#### 双指针
 双指针，数组存储目标子串每个字符的出现次数，变量count保存还需几个字符，右指针扩张时判断count是否为0，为0则移动左指针（当l<r且当前字符多余时），之后更新最小值。
 
-## 143. 重排链表
-### 快慢指针找到中点，反转后半部分，合并前后两部分
+### [143.重排链表](https://leetcode-cn.com/problems/reorder-list/)
+<div id="143"></div>
 
-## 31. 下一个排列
-### 从尾部起找到第一个升序对（i,j），再从尾部起找到第一个大于i的数，交换并将i之后重排为升序
+#### 快慢指针找到中点，反转后半部分，合并前后两部分
 
-## 300. 最长递增子序列
-### 动规
+### [31.下一个排列](https://leetcode-cn.com/problems/next-permutation/)
+<div id="31"></div>
+
+#### 从尾部起找到第一个升序对（i,j），再从尾部起找到第一个大于i的数，交换并将i之后重排为升序
+
+### [300.最长递增子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence/)
+<div id="300"></div>
+
+#### 动规
 dp[i] : 以nums[i] 结尾的最长子序列的长度
 dp[i] = max(dp[j] + 1)  if i > j && nums[i] > nums[j]  
-### 贪心+二分
+#### 贪心+二分
 要使上升子序列尽可能的长，则我们需要让序列上升得尽可能慢，因此我们希望每次在上升子序列最后加上的那个数尽可能的小。
 基于上面的贪心思路，我们维护一个数组 d[i] ，表示**长度为 i 的最长上升子序列的末尾元素的最小值**，用len 记录目前最长上升子序列的长度，起始时 len为 1，d[1] = nums[0]。
 同时我们可以注意到 d[i] 是关于 i **单调递增**的。
@@ -146,3 +189,67 @@ dp[i] = max(dp[j] + 1)  if i > j && nums[i] > nums[j]
   - 如果nums[i]>d[len] ，则直接加入到 dd 数组末尾，并更新 len=len+1；
 
   - 否则，在 d数组中二分查找，找到第一个比 nums[i] 小的数 d[k] ，并更新 d[k+1]=nums[i]。
+
+### [84.柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+<div id="84"></div>
+
+#### 单调栈
+以每个柱子为扩展点，向左向右划等高线，一旦遇到比它低的就不能再扩展，以此柱为中心的最大矩形就确定了。即要寻找以当前柱为中心的，**左右两边第一个低于它的柱子**。
+从前向后遍历，当后面的柱子更高的时候，当前结点仍能扩展。
+维护一个单调递增的栈，当当前数小于栈顶，则栈顶元素左右第一个小数找到，左右边界确定，更新最大矩形。出栈直到当前数大于栈顶。
+遍历结束后，若栈非空，则依次出栈。出栈过程中，左边界确定为栈顶，右边界为数组末尾。
+```c++
+ int largestRectangleArea(vector<int> &heights) {
+        unsigned long size = heights.size();
+        if (size == 1) {
+            return heights[0];
+        }
+        int res = 0;
+        stack<int> stk;
+        for (int i = 0; i < size; ++i) {
+            while (!stk.empty() && heights[stk.top()] > heights[i]) {
+                int length = heights[stk.top()];
+                stk.pop();
+                int weight = i;
+                if (!stk.empty()) {
+                    weight = i - stk.top() - 1;
+                }
+                res = max(res, length * weight);
+            }
+            stk.push(i);
+        }
+        while (!stk.empty()) {
+            int length = heights[stk.top()];
+            stk.pop();
+            int weight = size;
+            if (!stk.empty()) {
+                weight = size - stk.top() - 1;
+            }
+            res = max(res, length * weight);
+        }
+        return res;
+    }
+```
+
+> **哨兵**：可以在原数组两端加入高度为0的元素当做哨兵，简化代码。这样栈中至少有两个元素，且不会存在遍历结束之后仍有有效元素残留在栈中的情况。不用对栈是否非空做出分类讨论。
+
+### [739.每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+<div id="739></div>
+#### 单调递减栈
+
+## 思想
+### 单调栈
+
+- [84. 柱状图中最大的矩形](#84)
+- [42. 接雨水](#42)
+- [739. 每日温度（中等）](https://leetcode-cn.com/problems/daily-temperatures/)
+- [496. 下一个更大元素 I（简单）](https://leetcode-cn.com/problems/next-greater-element-i/)
+- [316. 去除重复字母（困难）](https://leetcode-cn.com/problems/remove-duplicate-letters/)
+- [901. 股票价格跨度（中等）](https://leetcode-cn.com/problems/online-stock-span/)
+- [402. 移掉K位数字](https://leetcode-cn.com/problems/remove-k-digits/)
+- [581. 最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
+
+
+### 股票问题
+### 跳跃游戏
+### n数之和
