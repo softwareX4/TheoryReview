@@ -13,6 +13,7 @@
 
 
 ## JAVA
+
 ### 对象序列化
 对象的复用。保存在内存中的各种对象的状态，并且可以把保存的对象状态再读出来。
 - 使用情况
@@ -172,6 +173,108 @@ Collection是所有序列容器类的根接口，容器之间的共性通过迭�
   - TreeSet
   红黑树
   - LinkedHashSet
+
+
+### Map 
+#### HashMap
+JDK8:
+【数组+链表+红黑树】
+
+![](.img/hashmap.png)
+
+- 初始化桶大小为**16**，因为底层是数组，所以这是数组默认的大小。
+- 默认的负载因子（**0.75**f）
+- 大小只能是2的幂次方，因为使用位运算代替取模。
+> 位运算直接对内存数据进行操作，不需要转成十进制
+- 每次put检查是否超过阈值（大小*负载因子），超过则扩一倍
+- 数组大于64并且链表长度大于8时转化为红黑树存储
+- 树的结点小于6时转为链表
+
+**哈希值怎么计算**
+先算出key自带的hashcode，再跟高16位做异或。
+![](.img/hash1.png)
+
+![](.img/hash.png)
+
+- 问题一：那么为什么不直接返回hashcode值，而是再与高16位进行异或运算？
+
+因为length绝大多数情况下都小于2^16即小于65536，所以 h & (length-1) 结果始终是hashcode的低16位与（length-1）进行&运算。要是高16位也参与运算，会让得到的下标更加散列。
+而16或者其他2的幂，length - 1的值是所有二进制位全为1，这种情况下，index的结果等同于h后几位的值，只要输入的hashcode本身分布均匀,hash算法的结果就是均匀的。
+> 混合原始哈希码的高位和低位，以此来加大低位的随机性。而且混合后的低位掺杂了高位的部分特征，这样高位的信息也被变相保留下来。
+
+- 问题二：为什么用^而不用&和|
+因为&和|都会使得结果偏向0（1/4）或者1 （3/4），并不是均匀的概念，所以用^。
+
+**put**
+1. 对key做hash运算，计算出key所在的index。
+2. 若无碰撞直接放入，有碰撞判断是链表还是红黑树之后插入。
+3. key相同替换原来的值
+4. 检查是否达到阈值，达到则扩容
+
+![](.img/hashput.png)
+
+**get**
+1. 计算key所在的index
+2. 无冲突直接返回，有冲突判断是链表还是红黑树之后返回
+
+
+**判断一个元素相同**
+- 比较hash值，之后用==和eqauls()
+如果只有hash值等，说明冲突，如果都等，则是同一个。
+
+**先插入还是先扩容**
+HashMap初始化后**首次插入**数据时，**先发生resize扩容**再插入数据，之后每当插入的数据个数**达到threshold**时就会发生resize，此时是**先插入**数据再resize。
+
+**线程安全**
+HashMap是线程不安全的，插入的对象如果hashcode相等可能被覆盖，扩容也可能出问题(从一个数组复制到另一个)。
+HashTable是线程安全的（synchronized），Collection包装的synchronizedMap也是
+
+#### ConcurrentHashMap
+1.7用Segment + HashEntry分段加锁
+
+![](.img/conhash.png)
+
+Segment继承自ReentrantLock，默认长度16
+
+![](.img/conhash7s.jpg)
+
+**put**
+
+![](.img/conhash.jpg)
+定位到具体的Segment，再通过ReentrantLock操作
+1. 计算hash，定位Segment，为空初始化
+2. 用ReentrantLock加锁，失败则自旋，超过次数阻塞，一定获取到锁
+3. 遍历HashEntry，存在则替换，不存在则插入
+
+1.8用CAS + synchronized + Node
+
+![](.img/conhash8s.jpg)
+
+**put**
+
+![](.img/conhash8.jpg)
+
+1. 计算hash，遍历node数组，空则CAS+自旋初始化
+2. 当前数组空CAS写入
+3. 若hash == MOVED则扩容
+4. 若都不满足，synchronized写入，同hashmap
+
+### equals
+#### == 和 equals
+- == 比较的是变量(栈)内存中存放的对象的(堆)内存地址，用来判断两个对象的**地址是否相同**，即是否是指相同一个对象。比较的是真正意义上的指针操作。
+- equals用来比较的是两个对象的**内容是否相等**，由于所有的类都是继承自java.lang.Object类的，所以适用于所有对象，如果没有对该方法进行覆盖的话，调用的仍然是Object类中的方法，而Object中的equals方法返回的却是==的判断。
+
+#### 重写equals方法需同时重写hashCode方法？
+hashCode方法在定义时做出了一些常规协定，即
+1，当obj1.equals(obj2) 为 true 时，obj1.hashCode() == obj2.hashCode()
+
+2，当obj1.equals(obj2) 为 false 时，obj1.hashCode() 可以等于 obj2.hashCode()
+
+如果我们已经对HashMap的原理有了一定了解，这个结果就不难理解了。尽管我们在进行get和put操作的时候，使用的key从逻辑上讲是等值的（**通过equals比较是相等的**），但由于没有重写hashCode方法，所以put操作时，key(hashcode1)–>hash–>indexFor–>最终索引位置 ，而通过key取出value的时候 key(hashcode1)–>hash–>indexFor–>最终索引位置，由于hashcode1不等于hashcode2，导致没有定位到一个数组位置而返回逻辑上错误的值null（也有可能碰巧定位到一个数组位置，但是也会判断其entry的hash值是否相等，上面get方法中有提到。）
+
+所以，在重写equals的方法的时候，必须注意重写hashCode方法，同时还要保证通过equals判断相等的两个对象，调用hashCode方法要返回同样的整数值。而如果equals判断不相等的两个对象，其hashCode可以相同（只不过会发生哈希冲突，应尽量避免）。
+
+
 ### 注解
 三种标准注解（@Override、@Deprecated、@SuppressWarnings）和四种元注解
 
