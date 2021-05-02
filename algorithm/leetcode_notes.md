@@ -106,6 +106,8 @@ TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
 #### 二分
 二分搜索，当左边有序（**num[0]** <= nums[mid] ）: 若target 在 nums[0]和nums[mid]的值之间，r = mid - 1，否则在右边搜索 l = mid + 1。 右边有序（nums[mid] <= **nums[n - 1]**）同理。
 
+
+
 ### [200.岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
 <div id="200"></div>
 
@@ -137,6 +139,77 @@ for(int i = k; i < n; ++i){
             swap(nums[k],nums[i]);
         }
 ```
+
+### [47.全排列II](https://leetcode-cn.com/problems/permutations-ii/)
+<div id="47"></div>
+
+#### 去重的常用解法：排序，不是第一个且与前一个相等时continue
+```c++
+ for(int i = 0; i < n; ++i){
+            if(mark[i])continue;
+            //mark[i-1]为true时说明相等的那个数在当前选取列表中，那么是否选取当前数字不会造成重复情况
+            //当mark[i]为false时，是否选取当前数字和其重复的数字的情况才是重复判断的，地位等同的，而前一个数的情况已经判断过，所以跳过
+            if(i != 0 && nums[i] == nums[i - 1] && !mark[i - 1])continue;
+            mark[i] = 1;
+            res.push_back(nums[i]);
+            backtrack(nums,n,k+1,mark,res,ans);
+            res.pop_back();
+            mark[i] = 0;
+
+        }
+```
+
+### [39.组合总和](https://leetcode-cn.com/problems/combination-sum/)
+<div id="39"></div>
+
+#### 组合问题，不关心顺序，顺序不同不是不同的答案。排序后设置搜索起点。
+```c++
+for(int i = k; i < n; ++i){
+            if(target < candidates[i])break;
+            res.push_back(candidates[i]);
+            //注意这里从i位置开始搜索，也就是当前数的位置
+            //排列问题是从下一层开始搜索，即k+1
+            backtrack(candidates,n,i ,target - candidates[i],res,ans);
+            res.pop_back();
+        }
+```
+
+### [40.组合总和II](https://leetcode-cn.com/problems/combination-sum-ii/)
+<div id="40"></div>
+
+#### 多了一个去重，搜索起始位置变为当前数之后的位置
+
+
+### [60.排列序列](https://leetcode-cn.com/problems/permutation-sequence/)
+<div id="60"></div>
+
+#### 将全排列求解过程看做一颗树，要定位第k个排列，则子树小于k的一定不包含答案
+在每一层，基于该结点的子节点个数为(n - depth)!，同一层的兄弟节点，其子树规模相等，由于多次计算阶乘，先计算并把结果保存在数组中。
+```c++
+    void backtrack(int n,int k,int depth,vector<int>&res,vector<int>&mark){
+        if(res.size() == n)return;
+        //当前子树的规模
+        int cnt = F[n - depth ];
+        for(int i = 1; i <= n;++i){
+            if(mark[i])continue;
+            //子树规模<k，必然不在当前分支中，k减去子节点个数，判断下一个分支
+            if(cnt < k){
+                //同一层，叶子节点数相等
+                k -= cnt;
+                continue;
+            }
+            //必然在当前分支内
+            mark[i] = true;
+            res.push_back(i);
+            //求解下一层深度
+            backtrack(n,k,depth + 1,res,mark);
+            //直接返回，不再回溯
+            return;
+
+        }
+    }
+```
+实际上没有回头恢复状态的过程，只有剪枝和深度遍历。
 
 ### [124.二叉树中的最大路径和](https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/)
 <div id="124"></div>
@@ -237,6 +310,9 @@ dp[i] = max(dp[j] + 1)  if i > j && nums[i] > nums[j]
 <div id="739></div>
 #### 单调递减栈
 
+### [51.N皇后](https://leetcode-cn.com/problems/n-queens/)
+#### 按行dfs，内部按列循环，维护列、主对角线(i -j相等)、副对角线(i + j相等)数组
+
 ## 思想
 ### 单调栈
 
@@ -249,6 +325,15 @@ dp[i] = max(dp[j] + 1)  if i > j && nums[i] > nums[j]
 - [402. 移掉K位数字](https://leetcode-cn.com/problems/remove-k-digits/)
 - [581. 最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
 
+### 回溯
+- [46.全排列](#46)
+- [47.全排列II](#47)
+- [39.组合总和](#39)
+- [40.组合总和II](#40)
+- [60.排序序列](#60)
+
+
+> [回溯法集合](https://leetcode-cn.com/problems/permutations/solution/hui-su-suan-fa-python-dai-ma-java-dai-ma-by-liweiw/)
 
 ### 股票问题
 ### 跳跃游戏
