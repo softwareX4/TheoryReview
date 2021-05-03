@@ -211,6 +211,39 @@ for(int i = k; i < n; ++i){
 ```
 实际上没有回头恢复状态的过程，只有剪枝和深度遍历。
 
+
+### [93.复原IP地址](https://leetcode-cn.com/problems/restore-ip-addresses/)
+#### 回溯每次三位一判断，善用substr()函数，剪枝：0只能单独作为一段，每段不能大于255
+```c++
+void backtrack(string s, int n, int index,int seg,vector<string> &ans,string &res){
+       if(index == n || seg == 4){
+           //遍历完且4段则是结果之一
+           if(index == n && seg == 4){
+               //最后一位多一个‘.’，要截掉
+               ans.push_back(res.substr(0,res.size() - 1));
+           }
+           //否则不计入，但也结束遍历
+           return;
+       }
+       //一个ip段
+       for(int i = 1; i <= 3 ;++i){
+           if(index + i > n)return;
+           //0特判
+           if(s[index] == '0' && i != 1)return;
+           if(i == 3 && s.substr(index,i) > "255")return;
+           res += s.substr(index,i);
+           res.push_back('.');
+           backtrack(s,n,index + i,seg + 1,ans,res);
+           res = res.substr(0,res.size() - i - 1);
+       }
+       
+    }
+```
+
+### [130.被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions/)
+#### 不方便直接查找被围绕的区域，又知直接或间接与边缘的‘O’相连的一定不会被改变，那么从边缘O深搜，与之相连的都打上标记，最后遍历图，改变没有标记的O
+
+
 ### [124.二叉树中的最大路径和](https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/)
 <div id="124"></div>
 
