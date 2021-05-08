@@ -346,6 +346,41 @@ dp[i] = max(dp[j] + 1)  if i > j && nums[i] > nums[j]
 ### [51.N皇后](https://leetcode-cn.com/problems/n-queens/)
 #### 按行dfs，内部按列循环，维护列、主对角线(i -j相等)、副对角线(i + j相等)数组
 
+### [71.简化路径](https://leetcode-cn.com/problems/simplify-path/)
+####  按'/'分割字符串，挨个判断。
+若是"./"或者""则忽略，若是"../"当有上级目录时弹出上级，若是其他情况入栈。
+> getline(输入流，存储区，分隔符)
+```c++
+class Solution {
+public:
+    string simplifyPath(string path) {
+        stringstream str(path);
+        vector<string> ans;
+        string cur;
+        while(getline(str,cur,'/')){
+            if(cur != "" && cur != "."){
+                if(cur != ".."){
+                    ans.push_back(cur);
+                }
+                else if(!ans.empty()){
+                    ans.pop_back();
+                }
+            }
+        }
+        string res = "";
+        if(!ans.empty()){
+            for(string s : ans){
+                res.append("/");
+                res.append(s);
+            }
+            return res;
+        }
+        return "/";
+    }
+};
+```
+[C++使用stringstream和getline实现split](https://blog.csdn.net/qq_36743440/article/details/91999615)
+
 ## 思想
 ### 单调栈
 
