@@ -467,6 +467,51 @@ public:
 > [回溯法集合](https://leetcode-cn.com/problems/permutations/solution/hui-su-suan-fa-python-dai-ma-java-dai-ma-by-liweiw/)
 
 ### 股票问题
+<ul>
+<li><a href="https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/" target="_blank">121. 买卖股票的最佳时机</a></li>
+<li><a href="https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/" target="_blank">122. 买卖股票的最佳时机 II</a></li>
+<li><a href="https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/" target="_blank">123. 买卖股票的最佳时机 III</a></li>
+<li><a href="https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv/" target="_blank">188. 买卖股票的最佳时机 IV</a></li>
+<li><a href="https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/" target="_blank">309. 最佳买卖股票时机含冷冻期</a></li>
+<li><a href="https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/" target="_blank">714. 买卖股票的最佳时机含手续费</a></li>
+</ul>
+
+[股票问题系列通解](https://leetcode-cn.com/circle/article/qiAgHn/)
+
+除去每个问题的特解，动态规划可以作为通解。
+
+
+<strong>给定一个表示每天股票价格的数组，什么因素决定了可以获得的最大收益？</strong>
+
+<ul>
+<li>用 <code>n</code> 表示股票价格数组的长度；</li>
+<li>用 <code>i</code> 表示第 <code>i</code> 天（<code>i</code> 的取值范围是 <code>0</code> 到 <code>n - 1</code>）；</li>
+<li>用 <code>k</code> 表示允许的最大交易次数；</li>
+<li>用 <code>T[i][k]</code> 表示在第 <code>i</code> 天结束时，<strong>最多</strong>进行 <code>k</code> 次交易的情况下可以获得的最大收益。</li>
+</ul>
+
+第 <code>i</code> 天可能的操作。有多少个选项？答案是三个：<strong>买入</strong>、<strong>卖出</strong>、<strong>休息</strong>。应该选择哪个操作？答案是：并不知道哪个操作是最好的，但是可以通过计算得到选择每个操作可以得到的最大收益。题目中有限制条件，规定不能同时进行多次交易，因此如果决定在第 <code>i</code> 天<strong>买入</strong>，在买入之前必须持有 <code>0</code> 份股票，如果决定在第 <code>i</code> 天<strong>卖出</strong>，在卖出之前必须恰好持有 <code>1</code> 份股票。持有股票的数量是隐藏因素，该因素影响第 <code>i</code> 天可以进行的操作，进而影响最大收益。
+
+<p>因此对 <code>T[i][k]</code> 的定义需要分成两项：</p>
+<ul>
+<li><code>T[i][k][0]</code> 表示在第 <code>i</code> 天结束时，<strong>最多</strong>进行 <code>k</code> 次交易且在进行操作后持有 <code>0</code> 份股票的情况下可以获得的最大收益；</li>
+<li><code>T[i][k][1]</code> 表示在第 <code>i</code> 天结束时，<strong>最多</strong>进行 <code>k</code> 次交易且在进行操作后持有 <code>1</code> 份股票的情况下可以获得的最大收益。</li>
+</ul>
+
+<p>使用新的状态表示之后，可以得到基准情况和状态转移方程。</p>
+<p>基准情况：</p>
+<pre><code>T[-1][k][0] = 0, T[-1][k][1] = -Infinity
+T[i][0][0] = 0, T[i][0][1] = -Infinity
+</code></pre>
+<p>状态转移方程：</p>
+<pre><code>T[i][k][0] = max(T[i - 1][k][0], T[i - 1][k][1] + prices[i])
+T[i][k][1] = max(T[i - 1][k][1], T[i - 1][k - 1][0] - prices[i])
+</code></pre>
+<p>基准情况中，<code>T[-1][k][0] = T[i][0][0] = 0</code> 的含义和上文相同，<code>T[-1][k][1] = T[i][0][1] = -Infinity</code> 的含义是在没有进行股票交易时不允许持有股票。</p>
+<p>对于状态转移方程中的 <code>T[i][k][0]</code>，第 <code>i</code> 天进行的操作只能是<strong>休息</strong>或<strong>卖出</strong>，因为在第 <code>i</code> 天结束时持有的股票数量是 <code>0</code>。<code>T[i - 1][k][0]</code> 是<strong>休息</strong>操作可以得到的最大收益，<code>T[i - 1][k][1] + prices[i]</code> 是<strong>卖出</strong>操作可以得到的最大收益。注意到允许的最大交易次数是不变的，因为每次交易包含两次成对的操作，<strong>买入</strong>和<strong>卖出</strong>。只有<strong>买入</strong>操作会改变允许的最大交易次数。</p>
+<p>对于状态转移方程中的 <code>T[i][k][1]</code>，第 <code>i</code> 天进行的操作只能是<strong>休息</strong>或<strong>买入</strong>，因为在第 <code>i</code> 天结束时持有的股票数量是 <code>1</code>。<code>T[i - 1][k][1]</code> 是<strong>休息</strong>操作可以得到的最大收益，<code>T[i - 1][k - 1][0] - prices[i]</code> 是<strong>买入</strong>操作可以得到的最大收益。注意到允许的最大交易次数减少了一次，因为每次<strong>买入</strong>操作会使用一次交易。</p>
+<p>为了得到最后一天结束时的最大收益，可以遍历股票价格数组，根据状态转移方程计算 <code>T[i][k][0]</code> 和 <code>T[i][k][1]</code> 的值。最终答案是 <code>T[n - 1][k][0]</code>，因为结束时持有 <code>0</code> 份股票的收益一定大于持有 <code>1</code> 份股票的收益。</p>
+
 ### 跳跃游戏
 ### n数之和
 
