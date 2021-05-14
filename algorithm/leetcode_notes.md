@@ -381,7 +381,7 @@ public:
 ```
 [C++使用stringstream和getline实现split](https://blog.csdn.net/qq_36743440/article/details/91999615)
 
-### 用rand7实现rand10
+### [470.用rand7实现rand10](https://leetcode-cn.com/problems/implement-rand10-using-rand7/)
 ####  (randX() - 1)*Y + randY() 可以等概率的生成[1, X * Y]范围的随机数
 
 
@@ -443,6 +443,9 @@ public:
     }
 };
 ```
+
+### [48.旋转图像](https://leetcode-cn.com/problems/rotate-image/) 
+#### 顺时针旋转 =  上下翻转 + 沿主对角线翻转
 
 ## 思想
 ### 单调栈
@@ -548,4 +551,5 @@ T[i][k][1] = max(T[i - 1][k][1], T[i - 1][k - 1][0] - prices[i])
 对树进行遍历需要$O(n)$复杂度，而总共有q个询问，每个询问可以$O(1)$回答，复杂度为$O(n+q)$。
 
 [离线LCA(Tarjan)算法详](https://segmentfault.com/a/1190000015145319)
+
 
