@@ -484,7 +484,154 @@ A调用B.join()，A被挂起直到B结束
 
 #### ThreadLocl
 在线程内部维护其自己的变量，别的线程不可见。
-比如Spring在为保证所有对数据库的CRUD都在一个数据库连接上进行，会设置为ThreadLocl。
+
+**提供线程本地变量**，如果创建一个ThreadLocal变量，那么访问这个变量的每个线程都会有这个变量的一个**副本**，在实际多线程操作的时候，操作的是自己**本地内存**中的变量，从而规避了线程安全问题。相比同步机制，**用空间换时间**。
+
+
+**使用场景**
+比如Spring提供了事务相关的操作，而事务要求着保证一组操作同时成功或者失败，那么就要保证所有对数据库的CRUD都在一个数据库连接上进行，Spring会使用ThreadLocal存储Map，key为DataSource，value为connection（多数据源）。ThreadLocal保证同一个线程获取的connection对象每次都是同一个。
+
+SimpleDateFormat(下面简称sdf)类内部有一个Calendar对象引用,它用来储存和这个sdf相关的日期信息,例如sdf.parse(dateStr), sdf.format(date) 诸如此类的方法参数传入的日期相关String, Date等等, 都是交由Calendar引用来储存的.这样就会导致一个问题,如果你的sdf是个static的, 那么多个thread 之间就会共享这个sdf, 同时也是共享这个Calendar引用, 并且, 观察 sdf.parse() 方法,你会发现有如下的调用:
+
+```java
+Date parse() {
+ 
+  calendar.clear(); // 清理calendar
+ 
+  ... // 执行一些操作, 设置 calendar 的日期什么的
+ 
+  calendar.getTime(); // 获取calendar的时间
+ 
+}
+```
+如果有两个线程，线程A在clear之后getTime之前被切换，线程B上CPU，并再次执行clear，导致线程A设置的日期被清空，或者线程A的日期变成线程B设置的。
+解决方法：
+1. 每次使用前创建新的局部变量（变共享为私有）
+2. 同步，每次用sdf前先synchronized加锁
+加锁必然导致性能下降
+3. ThreadLocal
+```java
+public class ConcurrentDateUtil {
+ 
+    private static ThreadLocal<DateFormat> threadLocal = new ThreadLocal<DateFormat>() {
+ 
+        @Override
+ 
+        protected DateFormat initialValue() {
+ 
+            return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+ 
+        }
+ 
+    };
+ 
+    public static Date parse(String dateStr) throws ParseException {
+ 
+        return threadLocal.get().parse(dateStr);
+    }
+ 
+ 
+    public static String format(Date date) {
+ 
+        return threadLocal.get().format(date);
+ 
+    }
+ 
+}
+```
+
+**原理**
+ThreadLocal实际自己不存储变量，而是把自己作为key，变量为value存储到ThreadLocalMap里面去，这个ThreadLocalMap由线程维护。也就是在对ThreadLocal进行get和set操作时，实际上是在对当前线程的threadlocalmap进行操作。而ThreadLocalMap由线程引用维护，当然是线程私有变量了。
+threadLocalMap类的定义在threadLocal类中，是threadLocal类的静态内部类，属于threadLocal类，而不是属于threadLocal对象
+![](.img/tlm.png)
+
+![](.img/tl.png)
+
+ThreadLocal一般修饰为static，只用初始化一次，也就是说多个线程去访问同一个ThreadLocal对象，得到的**key值是一样的**，接下来去**自己的**ThreadLocalMap里面查找值，得到的还是该线程的变量。
+
+**为什么要把ThreadLocal作为key呢？为什么不把线程作为key，直接开一个map？**
+首先，线程拥有多个变量，为区别这些变量还需要做别的标记。
+其次，这意味着所有线程访问同一个map，这个map会很大，并且不知道何时才能销毁该map。
+而ThreadLocal的数量就是线程需要的私有变量的数量，对应的map不会很大，线程销毁之后，map也会被销毁。
+
+**key的hash值threadLocalHashCode是原生的吗（Object.hashCode()）**
+不是。
+```java
+private final int threadLocalHashCode = nextHashCode();
+...
+
+ private static final int HASH_INCREMENT = 0x61c88647 ;
+ private static int nextHashCode () {
+   //这个方法的作用是让当前线程的nextHashCode这个值与魔法值HASH_INCREMENT相加。
+    return nextHashCode.getAndAdd ( HASH_INCREMENT ); 
+    }
+
+```
+每当创建 ThreadLocal 实例时threadLocalHashCode都会getAndAdd(HASH_INCREMENT)。HASH_INCREMENT 是为了让哈希码能均匀的分布在2的N次方的数组里。
+采用**斐波那契散列**，此种方法使用斐波那契数列的值作为乘数而不是自己。
+**HASH_INCREMENT = 2^32 * 黄金分割比**。
+斐波那契数列在当n趋向于无穷大时，前一项与后一项的比值越来越逼近黄金比。
+
+
+**ThreadLocalMap结构**
+ThreadLocalMap内部实际上是一个Entry数组。并且继承弱引用。
+```java
+static class ThreadLocalMap {
+
+        static class Entry extends WeakReference<ThreadLocal<?>> {
+            /** The value associated with this ThreadLocal. */
+            Object value;
+
+            Entry(ThreadLocal<?> k, Object v) {
+                super(k);
+                value = v;
+            }
+        }
+        ……
+    }
+```
+
+![](.img/tlmmm.png)
+
+![](.img/tlmentry.jpg)
+
+初始大小是16，负载因子为2/3，大小是2的幂次
+**扩容**
+当前table大小已经超过阈值了，则做一次rehash，rehash函数会调用一次全量清理slot方法也即expungeStaleEntries，如果完了之后table大小超过了threshold - threshold / 4（即3/4 * 2/3 = 1 / 2，原长度的一半），则进行扩容2倍，并设置新阈值为现长度的2/3。
+
+底层是数组，冲突的解决是寻找下一个空位放入。
+
+![](.img/tlmset.jpg)
+
+**get**时先计算索引位置，找到则返回，未找到则线性探测继续找，过程中碰到过期数据触发一次连续段的清理expungeStaleEntry(int i)，即把该位置置空，size--,并从i的位置开始清理，遇到未回收的rehash。
+
+**set**时找到ke相同的则更新，碰到过期数据要替换replaceStaleEntry。
+即从该位置staleSlot**向前**找到最前的失效结点slotToExpunge ，
+再从该staleSlot**向后**扫描（因为用线性探测法，所以数据可能在后面），找到与key相同的，赋值，如果前面没有需要清理的，那么把开始清理索引slotToExpunge更新为当前位置，之后**启发式清理**。如果扫描中当前结点失效且前面没有需要清理的，那么更新slotToExpunge位置。
+如果没找到key，则在staleSlot处new一个。后续先连续段清理再**启发式清理**。
+> 启发式： Entry对象不为空，但是ThreadLocal这个key已经为null，会触发一次连续段清理，并返回true
+ if (e != null && e.get() == null)
+
+set还会在判断是否需要resize前清理一遍：
+```java
+if (!cleanSomeSlots(i, sz) && sz >= threshold)
+        rehash();
+```
+
+
+**ThreadLocal的内存泄漏**
+由于ThreadLocalMap的key是弱引用指向ThreadLocal（只有弱引用的对象会在下一次GC的时候回收），这就导致了一个问题，**ThreadLocal被回收了，ThreadLocalMap中Entry的key没有指向，但Entry同时还有Thread -> ThreadLocalMap -> Entry value -> Object这一引用链。** 如果创建ThreadLocal的线程一直持续运行，那么这个Entry对象中的value就有可能一直得不到回收，发生内存泄露。
+比如**线程池**里面的线程，线程都是复用的，那么之前的线程实例处理完之后，出于复用的目的线程依然存活，所以，ThreadLocal设定的value值被持有，导致内存泄露。按照道理一个线程使用完，ThreadLocalMap是应该要被清空的，但是现在线程被复用了。
+
+其实，内存泄漏发生的可能性很小。如果ThreadLocal没有被回收，不存在内存泄漏问题，如果线程被销毁，ThreadLocalMap也会被销毁，ThreadLocal本身在操作时发现key为null的会清除掉，那么在线程池中，调用ThreadLocal的set/get/remove方法都会清除掉key为null的。
+那么内存泄漏发生的场景会是：**ThreadLocal被回收，线程被复用，且不再调用ThreadLocal 的 set get remove方法。**
+
+**为什么是弱引用**
+通过ThreadLocal操作map，如果ThreadLocal被置空，没法办法操作map，Entry强引用指向也没有意义。
+
+
+
+
 
 
 
