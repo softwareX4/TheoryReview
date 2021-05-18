@@ -460,6 +460,7 @@ public:
 - [581. 最短无序连续子数组](https://leetcode-cn.com/problems/shortest-unsorted-continuous-subarray/)
 
 ### 回溯
+回溯其实就是一颗n叉树的遍历，先序遍历就是进入某结点前要做的工作，后序遍历就是离开某结点时要做的工作。
 - [46.全排列](#46)
 - [47.全排列II](#47)
 - [39.组合总和](#39)
