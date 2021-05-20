@@ -447,6 +447,17 @@ public:
 ### [48.旋转图像](https://leetcode-cn.com/problems/rotate-image/) 
 #### 顺时针旋转 =  上下翻转 + 沿主对角线翻转
 
+### [198.打家劫舍I](https://leetcode-cn.com/problems/house-robber/)
+#### 动态规划，每个房子分为劫或者不劫两种状态，dp[i] = max{dp[i - 2] + v[i],dp[i - 1]}
+
+### [213.打家劫舍II](https://leetcode-cn.com/problems/house-robber-ii/)
+#### 变成环形之后，因为首部是否取影响到尾部，那么分两种情况，取第一个，和不取第一个。取第一个，则必然不取最后一个，动规的区间是(0,length - 2)。不取第一个，则动规区间是(1,length - 1)。最后取两者最大值。
+
+### [337.打家劫舍III](https://leetcode-cn.com/problems/house-robber-iii/)
+#### 二叉树结构，每个节点也有两种状态，分别可以转移自子节点：偷，则子节点不能偷：dp1 = l.dp0 + r.dp0 + v[i];不偷，则子节点取最大值：dp0 = max(max(l.dp0,l.dp1) + max(r.dp0,r.dp1)，最后取两者最大值
+
+
+
 ## 思想
 ### 单调栈
 
@@ -518,7 +529,23 @@ T[i][k][1] = max(T[i - 1][k][1], T[i - 1][k - 1][0] - prices[i])
 
 ### 跳跃游戏
 ### n数之和
-
+- [1.两数之和](https://leetcode-cn.com/problems/two-sum/)
+固定一个数，二分求第二个数。
+二分框架：
+```c++
+//1. r = n - 1
+//2. l + (r-l)/2 这里防止l和r直接相加 太大溢出
+//3. while(l <= r)
+int l = 0, r = n - 1;
+while(l <= r){
+    int mid = l + (r - l) / 2;
+    if(target == nums[mid]) return nums[mid];
+    if(target < nums[mid]) r = mid - 1;
+    else l = mid + 1;
+}
+return -1;
+```
+- 
 
 ### 二叉树的公共祖先(LCA)问题
 - 问题背景
