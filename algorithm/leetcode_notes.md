@@ -528,6 +528,14 @@ T[i][k][1] = max(T[i - 1][k][1], T[i - 1][k - 1][0] - prices[i])
 <p>为了得到最后一天结束时的最大收益，可以遍历股票价格数组，根据状态转移方程计算 <code>T[i][k][0]</code> 和 <code>T[i][k][1]</code> 的值。最终答案是 <code>T[n - 1][k][0]</code>，因为结束时持有 <code>0</code> 份股票的收益一定大于持有 <code>1</code> 份股票的收益。</p>
 
 ### 跳跃游戏
+- [55.跳跃游戏](https://leetcode-cn.com/problems/jump-game/)
+每次更新最远位置，大于n就说明成功，在此期间若当前位置已超过前面能跳到的最远位置，则返回false。
+- [45.跳跃游戏II](https://leetcode-cn.com/problems/jump-game-ii/)
+到达最后位置的最少跳跃次数，记录当前位置能跳到的最大位置end，在此期间更新最大位置maxPos，在抵达当前结点最大位置end的时候，把end更新为maxPos，并跳一次。
+- [1306.跳跃游戏III](https://leetcode-cn.com/problems/jump-game-iii/)
+给定起始位置，可以向左向右跳。DFS+标记数组。。
+
+
 ### n数之和
 - [1.两数之和](https://leetcode-cn.com/problems/two-sum/)
 固定一个数，二分求第二个数。
@@ -545,7 +553,13 @@ while(l <= r){
 }
 return -1;
 ```
-- 
+- [15.三数之和](https://leetcode-cn.com/problems/3sum/)
+跟两数之和思路一样，多了一个去重
+
+- [18.四数之和](https://leetcode-cn.com/problems/4sum/submissions/)
+一样的思路，两重循环里面加双指针。
+
+
 
 ### 二叉树的公共祖先(LCA)问题
 - 问题背景
