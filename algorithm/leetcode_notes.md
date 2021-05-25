@@ -534,6 +534,90 @@ dp[k][0] = 0
 dp[1][m] = m (m > 0)
 dp[k][m] = dp[k-1][m-1] + dp[k][m-1] + 1 (k > 0, m>0)
 
+### [113.路径总和II](https://leetcode-cn.com/problems/path-sum-ii/)
+#### 从根到叶节点总和为目标和。回溯。
+树的遍历，遍历到叶节点时判断是否加入结果集，注意状态恢复。
+
+### [437.路径总和III](https://leetcode-cn.com/problems/path-sum-iii/)
+#### 从某结点向下路径和为目标和。回溯+前缀和
+基本思路：当前结点的前缀和curSum(包含当前结点)，如果在之前经过的结点中有前缀和为target - curSum的，那么他们之间的路径的和就是target。
+用一个map保存前缀和，key为前缀和,value为有几条路，每次进入和离开结点的时候要更新和恢复状态。
+**注意**开始要把前缀和为0的置1.
+```c++
+
+    void dfs(TreeNode * root,int target,int sum){
+        if(root == nullptr) return ;
+        int cur = sum + root->val;
+        if(prefix.find(cur - target) != prefix.end()){
+            ans += prefix[cur - target];
+        }
+        prefix[cur]++;
+        dfs(root->left,target,cur);
+        dfs(root->right,target,cur);
+        prefix[cur]--;
+        return;
+    }
+
+```
+### [114.二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
+#### 后序遍历，把右指针指向pre
+
+### 堆排序
+```c++
+/**
+ * 下沉操作
+ * @param {array} arr 待调整的堆 
+ * @param {number} parentIndex 要下沉的父节点
+ * @param {number} length 堆的有效大小
+ */
+void downAdjust(vector<int>&arr, int parentIndex, int length) {
+    // temp保存父节点的值，用于最后赋值
+    int temp = arr[parentIndex]
+    int childrenIndex = 2 * parentIndex + 1
+    while(childrenIndex < length) {
+        // 如果有右孩子，且右孩子大于左孩子的值，则定位到右孩子
+        // 这里其实是比较左、右子树的大小，选择更大的
+        if (childrenIndex + 1 < length && arr[childrenIndex + 1] > arr[childrenIndex]) {
+            childrenIndex++
+        }
+        // 如果父节点大于任何一个孩子得值，则直接跳出
+        if (temp >= arr[childrenIndex]) {
+            break
+        }
+        // 当左、右子树比父节点更大，进行交换
+        arr[parentIndex] = arr[childrenIndex]
+        parentIndex = childrenIndex
+        childrenIndex = 2 * childrenIndex + 1
+    }
+    arr[parentIndex] = temp
+}
+
+/**
+ * 堆排序(升序)
+ * @param {array} arr 待调整的堆 
+ */
+void heapSort(vector<int> &arr) {
+    // 把无序数组构建成最大堆, 这里-2,是因为从索引0开始、另外就是叶子节点【最后一层是不需要堆化的】
+    for(int i = (arr.length - 2)/2; i >= 0; i--) {
+        downAdjust(arr, i, arr.size())
+    }
+   
+    // 循环删除堆顶元素，并且移到集合尾部，调整堆产生新的堆顶
+    for(int i = arr.size() - 1; i > 0; i--) {
+        // 交换最后一个元素与第一个元素
+        let temp = arr[i]
+        arr[i] = arr[0]
+        arr[0] = temp
+        // 下沉调整最大堆
+        downAdjust(arr, 0, i)
+    }
+    return arr
+}
+// test case
+heapSort([4, 4, 6, 5, 3, 2, 8, 1]);
+```
+
+
 ## 思想
 ### 单调栈
 
