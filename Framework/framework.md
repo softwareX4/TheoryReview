@@ -213,3 +213,66 @@ public class UseController {
 
 
 
+## BeanDefinition
+Bean定义，Spring据此创建Bean对象。
+@Component、@Bean、\<bean/>都会解析为BeanDefinition
+- beanClass
+表示Bean类型
+- scope
+作用域：singleton / prototype
+- isLazy
+是否需要懒加载（原型Bean不起作用）
+懒加载：第一次getBean时生成
+非懒加载：Spring启动过程中生成
+- dependsOn
+创建之前依赖的其他Bean
+- primary
+是否是主Bean
+一个类有多个Bean，如果在依赖注入时发现有多个Bean，会判断是否有主Bean，若存在直接注入
+- initMethodName
+初始化方法
+初始化逻辑由程序员控制
+
+## BeanFactory
+Spring容器,创建、获取Bean
+BeanFactory利用BeanDefinition产出Bean对象
+- ListableBeanFactory
+- ConfigurableBeanFactory
+- AutowireCampableBeanFactory
+- AbstractBeanFactory
+- DefaultListableBeanFactory
+
+## Bean生命周期
+### Bean的创建
+- BeanDefinition
+Bean定义
+- 构造方法推断
+选出一个构造方法
+- 实例化
+构造方法反射得到对象
+可以用BeanPostProcessor机制对实例化进行干预
+- 属性填充
+给属性进行自动填充
+自动注入、依赖注入
+- 初始化
+对其他属性赋值、校验
+程序员可以利用初始化机制对Bean进行加工，如赋值和校验
+- 初始化后
+AOP、生成代理对象（BeanPostProcessor）
+
+
+## @Autowired
+某个属性是否需要注入
+- 加在属性上
+在**属性填充**这一步，基于实例化出来的对象，对该对象中加了@Autowired的属性自动赋值
+Spring 根据属性类型去容器中找出所有Bean对象，如果有多个，再根据属性名字确定一个，如果required为true，且根据属性信息找不到对象则抛异常。
+- 加在方法上
+根据参数类型、参数名字在容器中找到对象当做方法入参，自动反射调用该方法  
+- 加在构造方法上
+在**构造方法推断**这一步选择该方法进行实例化，在反射调用构造方法之前先根据参数类型、名称找到Bean对象当做入参
+
+## @Resource
+
+## @Value
+
+## BeanPostProcessor

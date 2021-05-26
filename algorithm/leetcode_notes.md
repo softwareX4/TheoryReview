@@ -562,6 +562,76 @@ dp[k][m] = dp[k-1][m-1] + dp[k][m-1] + 1 (k > 0, m>0)
 ### [114.二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
 #### 后序遍历，把右指针指向pre
 
+### [剑指 Offer 51. 数组中的逆序对](https://leetcode-cn.com/problems/shu-zu-zhong-de-ni-xu-dui-lcof/)
+#### 本质：归并排序。
+在合并的过程中，左半边要并入时，即arr[l] <= arr[r]，又知在r之前的位置上的元素已经并入，即arr[l]大于r之前的元素，而l位置在前面，说明：在前面的元素大于在后面的元素，产生逆序对，个数为 r之前的元素个数。
+
+```c++
+class Solution {
+public:
+int ans = 0;
+    int reversePairs(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> tmp(n,0);
+        merge(nums,tmp,0,n-1);
+        return ans;
+    }
+
+    void merge(vector<int> & nums,vector<int>& tmp, int start,int end){
+        if(start >= end)return;
+        int mid = (start + end) / 2;
+        merge(nums,tmp, start,mid);
+        merge(nums,tmp,  mid + 1, end);
+        mergeSort(nums,tmp,start,end,mid);
+    }
+    void mergeSort(vector<int> &nums,vector<int> &tmp, int start,int end,int mid){
+        int i = start,j = mid + 1;
+        int idx = 0;
+        while(i <= mid && j <= end){
+            if(nums[i] <= nums[j]){
+                ans += (j - (mid + 1));
+                tmp[idx++] = nums[i++];
+            }
+            else {
+                tmp[idx++] = nums[j++];
+            }
+        }
+        while(i <= mid){
+            ans += (j - (mid + 1));
+            tmp[idx++] = nums[i++];
+        }
+        while(j <= end){
+            tmp[idx++] = nums[j++];
+        }
+        int k = 0;
+        while(start <= end){
+            nums[start++] = tmp[k++];
+        }
+    }
+};
+```
+
+
+### [264.丑数II](https://leetcode-cn.com/problems/ugly-number-ii/)
+#### 动态规划
+第i 个丑数来自之前某个丑数乘以2或3或5，如果它来自第x个丑数乘以某个factor，即dp[i] = dp[x] * factor，那么下一个丑数一定不可能再来自于x之前的丑数乘以这个factor，因为dp数组是递增的，dp[0...x] * factor <= dp[x] * factor ，先标记住这个位置，下一次与该factor相乘要从这个位置之后的元素中选择。但下一个丑数仍可能来自于之前的丑数与其他因子相乘，基于同样的原理，我们可以为每个factor都维护一个指针，也就是标记与2、3、5相乘最小位置的三个指针。同样的，在得到当前丑数之后，更新对应的最小位置。
+```c++
+ int nthUglyNumber(int n) {
+        vector<int>dp(n+1);
+        int p2 = 1,p3 = 1,p5 = 1;
+        dp[1] = 1;
+        for(int i = 2; i <= n;++i){
+            int num2 = dp[p2] * 2,num3 = dp[p3] * 3,num5 = dp[p5] * 5;
+            dp[i] = min(num2,min(num3,num5));
+            //注意下面不能用else if，如果相等指针都要移动
+            if(dp[i] == num2) p2++;
+            if(dp[i] == num3) p3++;
+            if(dp[i] == num5) p5++;
+        }
+        return dp[n];
+    }
+```
+
 ### 堆排序
 ```c++
 /**
@@ -616,7 +686,29 @@ void heapSort(vector<int> &arr) {
 // test case
 heapSort([4, 4, 6, 5, 3, 2, 8, 1]);
 ```
-
+### [878.第N个神奇数字](https://leetcode-cn.com/problems/nth-magical-number/)
+#### x / a = l，则<= x 的数中有l个含有因子a
+设L为a、b的最小公倍数，f(x)为<=x的神奇数字的个数。f(x) =  x/a + x/b - x/L.
+从0~max(a,b) * n之间二分搜索每个数字f(i)
+```c++
+  int nthMagicalNumber(int n, int a, int b) {
+        int MOD = 1e9 + 7;
+        long lo = 0,hi = (long)1e15;
+        //最小公倍数
+        int L = a / gcd(a,b) * b;
+        while(lo < hi){
+            long mid = lo + (hi - lo) / 2;
+            if(mid / a + mid / b - mid/L < n)lo = mid + 1;
+            else hi = mid;
+        }
+        return (int)(hi % MOD);
+    }
+    int gcd(int a,int b){
+        if(a == 0)return b;
+        return gcd(b % a, a);
+    }
+```
+同理，[1201.丑数III](https://leetcode-cn.com/problems/ugly-number-iii/)是有3个因子，一样用二分
 
 ## 思想
 ### 单调栈
