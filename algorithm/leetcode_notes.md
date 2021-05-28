@@ -444,8 +444,7 @@ public:
 };
 ```
 
-### [48.旋转图像](https://leetcode-cn.com/problems/rotate-image/) 
-#### 顺时针旋转 =  上下翻转 + 沿主对角线翻转
+
 
 ### [198.打家劫舍I](https://leetcode-cn.com/problems/house-robber/)
 #### 动态规划，每个房子分为劫或者不劫两种状态，dp[i] = max{dp[i - 2] + v[i],dp[i - 1]}
@@ -709,6 +708,32 @@ heapSort([4, 4, 6, 5, 3, 2, 8, 1]);
     }
 ```
 同理，[1201.丑数III](https://leetcode-cn.com/problems/ugly-number-iii/)是有3个因子，一样用二分
+
+
+### [48.旋转图像](https://leetcode-cn.com/problems/rotate-image/)
+#### 找坐标关系
+![](.img/rotate.png)
+
+旋转后的位置关于矩阵中心对称，可以推断出坐标分别为(i,j),(j,n-1-i),(n-1-i,n-1-j),(n-1-j,i)
+
+顺时针旋转则按照顺时针顺序swap，逆时针旋转则按逆时针顺序swap
+
+```c++
+void rotate(vector<vector<int>>& matrix) {
+        int m = matrix.size();
+        int n = matrix[0].size();
+        for(int i = 0; i < m / 2; ++i){
+            for(int j =0; j < (n+1)/2; ++j){
+                swap(matrix[i][j],matrix[n - 1 - j][i]);
+                swap(matrix[i][j],matrix[n - 1 - i][n - 1 -j]);
+                swap(matrix[i][j],matrix[j][n - 1 - i]);
+            }
+        }
+
+    }
+
+```
+#### 顺时针旋转 =  上下翻转 + 沿主对角线翻转
 
 ## 思想
 ### 单调栈
