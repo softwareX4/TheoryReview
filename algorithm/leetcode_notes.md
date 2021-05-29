@@ -632,6 +632,7 @@ int ans = 0;
 ```
 
 ### 堆排序
+[堆排序演示](http://www.benfrederickson.com/heap-visualization/)
 ```c++
 /**
  * 下沉操作
@@ -734,6 +735,35 @@ void rotate(vector<vector<int>>& matrix) {
 
 ```
 #### 顺时针旋转 =  上下翻转 + 沿主对角线翻转
+
+### [139.单词拆分](https://leetcode-cn.com/problems/word-break/)
+#### DFS/BFS/DP
+DFS思路：判断已选择字符是否在单词表，在的话继续搜索剩余的子串。
+![](.img/139.png)
+
+DP思路：dp[i]表示**前i个**是否能拆分，(注意和数组下标不是对应的)
+如果dp[i]为true，则把其后包含单词表的单词的位置都标为true。如果为false则continue(因为之前没有任何一个位置开始将它标记，说明这个位置不能拆分，和标记寻找质数是一种思路)
+
+```c++
+bool wordBreak(string s, vector<string>& wordDict) {
+        int n = wordDict.size();
+        int length = s.length();
+        vector<bool> dp(length + 1, false);
+        dp[0] = true;
+        for(int i = 0; i < length; ++i){
+            if(!dp[i])continue;
+            for(auto & word : wordDict){
+                if(word.size() + i  <= length && s.substr(i,word.size()) == word){
+                    dp[i + word.size()] = true;
+                }
+            }
+        }
+
+        return dp[length];
+    }
+```
+
+
 
 ## 思想
 ### 单调栈
@@ -871,4 +901,29 @@ return -1;
 
 [离线LCA(Tarjan)算法详](https://segmentfault.com/a/1190000015145319)
 
+### 组合问题
+可以重复选取：不用标记数组，下一层还是从index开始
+不可以重复选取：要标记数组，下一层从index+1开始
+数组中有重复元素：if( i > 0 && !mark[i] && nums[i] == nums[i-1])continue;
 
+### 背包问题 
+**背包问题具备的特征**：
+是否可以根据一个 **target**（直接给出或间接求出），target 可以是数字也可以是字符串，再给定一个数组 **arrs**，问：**能否使用 arrs 中的元素做各种排列组合得到 target**。
+
+**背包问题解法**：
+**01 背包问题**：
+如果是 01 背包，即数组中的元素不可重复使用，外循环遍历 arrs，内循环遍历 target，且**内循环倒序**:
+
+**完全背包问题**：
+（1）如果是完全背包，即数组中的元素可重复使用并且不考虑元素之间顺序，arrs 放在外循环（保证 arrs 按顺序），**target在内循环**。且**内循环正序**。
+（2）如果组合问题需考虑元素之间的顺序，需将 **target 放在外循环**，将 arrs 放在内循环，且**内循环正序**。
+
+#### 01背包
+- [416.分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
+- [494.目标和](https://leetcode-cn.com/problems/target-sum/)
+有点技巧的：设不变的数之和A，添加负号的数和B。A + B = sum(总和),A - B = target. => A = (sum + target) / 2。即在数组中选数使其和为目标值。
+且本题为求方案数，dp[i] = dp[i] + dp[i-num[j]]；
+- [139.单词拆分](https://leetcode-cn.com/problems/word-break/)
+转化为是否可以用 wordDict 中的词组合成 s，完全背包问题，并且为“考虑排列顺序的完全背包问题”，外层循环为 target ，内层循环为选择池 wordDict。
+- [279.完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
+- [322.零钱兑换](https://leetcode-cn.com/problems/coin-change/)
