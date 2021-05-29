@@ -763,6 +763,13 @@ bool wordBreak(string s, vector<string>& wordDict) {
     }
 ```
 
+### [523.连续的子数组和](https://leetcode-cn.com/problems/continuous-subarray-sum/)
+#### 同余定理，哈希表保存（（前缀和%k），下标）
+设位置 j < i : 
+0 到 j 的前缀和 preSum1 = 某常数1 * k + 余数1
+0 到 i 的前缀和 preSum2 = 某常数2 * k + 余数2
+当找到 余数1 等于 余数2时， 则 j + 1 到 i 的连续和 = preSum2 - preSum1 = (某常数2 - 某常数1) * k， 必为 k 的倍数， 返回true
+
 
 
 ## 思想
@@ -927,3 +934,6 @@ return -1;
 转化为是否可以用 wordDict 中的词组合成 s，完全背包问题，并且为“考虑排列顺序的完全背包问题”，外层循环为 target ，内层循环为选择池 wordDict。
 - [279.完全平方数](https://leetcode-cn.com/problems/perfect-squares/)
 - [322.零钱兑换](https://leetcode-cn.com/problems/coin-change/)
+
+### 环形链表
+[环形链表问题](https://leetcode-cn.com/problems/linked-list-cycle/solution/yi-wen-gao-ding-chang-jian-de-lian-biao-wen-ti-h-2/)
