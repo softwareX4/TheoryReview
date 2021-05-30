@@ -937,3 +937,40 @@ return -1;
 
 ### 环形链表
 [环形链表问题](https://leetcode-cn.com/problems/linked-list-cycle/solution/yi-wen-gao-ding-chang-jian-de-lian-biao-wen-ti-h-2/)
+
+- [获取倒数第k个元素]
+- [获取中间位置的元素]
+- [判断链表是否存在环及环入口](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
+- [判断环的长度]
+
+
+### 和为K问题
+#### 等值查找
+前缀和+哈希表
+- [和为K的子数组](https://leetcode-cn.com/problems/subarray-sum-equals-k/)
+- [和为K的倍数的子数组](https://leetcode-cn.com/problems/continuous-subarray-sum/)
+- [和为K的子矩阵](https://leetcode-cn.com/problems/number-of-submatrices-that-sum-to-target/)
+
+#### 和最大
+动态规划
+- [和最大的子数组](https://leetcode-cn.com/problems/lian-xu-zi-shu-zu-de-zui-da-he-lcof/)
+- [积最大的子数组](https://leetcode-cn.com/problems/maximum-product-subarray/)
+- [和最大的子矩阵](https://leetcode-cn.com/problems/max-submatrix-lcci/)
+- [环形子数组的最大和](https://leetcode-cn.com/problems/maximum-sum-circular-subarray/)
+
+#### 不超过
+
+- [和不超过K的子矩阵最大和](https://leetcode-cn.com/problems/max-sum-of-rectangle-no-larger-than-k/)
+
+
+#### 至少为
+- [和至少为K的最短子数组](https://leetcode-cn.com/problems/shortest-subarray-with-sum-at-least-k/)
+
+
+### 第K个
+- [数组中第K大](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
+- [二叉搜索树中第K小](https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/)
+- [有序矩阵中第K小](https://leetcode-cn.com/problems/kth-smallest-element-in-a-sorted-matrix/)
+- [字典序第K小](https://leetcode-cn.com/problems/k-th-smallest-in-lexicographical-order/)
+- [乘法表中第K小](https://leetcode-cn.com/problems/kth-smallest-number-in-multiplication-table/)
+- [链表中倒数第K个结点](https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/)
