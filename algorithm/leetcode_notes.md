@@ -937,9 +937,6 @@ return -1;
 
 ### 环形链表
 [环形链表问题](https://leetcode-cn.com/problems/linked-list-cycle/solution/yi-wen-gao-ding-chang-jian-de-lian-biao-wen-ti-h-2/)
-
-- [获取倒数第k个元素]
-- [获取中间位置的元素]
 - [判断链表是否存在环及环入口](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
 - [判断环的长度]
 
