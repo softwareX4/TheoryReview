@@ -482,6 +482,54 @@ https://www.zhihu.com/question/20794107
 ##### Join方法
 A调用B.join()，A被挂起直到B结束
 
+#### 线程池
+```java
+public FlashExecutor(
+        int corePoolSize,
+        int maximumPoolSize,
+        long keepAliveTime,
+        TimeUnit unit,
+        BlockingQueue<Runnable> workQueue,
+        ThreadFactory threadFactory,
+        RejectedExecutionHandler handler) 
+{
+    ... // 省略一些参数校验
+    this.corePoolSize = corePoolSize;
+    this.maximumPoolSize = maximumPoolSize;
+    this.workQueue = workQueue;
+    this.keepAliveTime = unit.toNanos(keepAliveTime);
+    this.threadFactory = threadFactory;
+    this.handler = handler;
+}
+```
+int corePoolSize：核心线程数
+int maximumPoolSize：最大线程数
+long keepAliveTime：非核心线程的空闲时间
+TimeUnit unit：空闲时间的单位
+BlockingQueue < Runnable> workQueue：任务队列（线程安全的阻塞队列）
+ThreadFactory threadFactory：线程工厂
+RejectedExecutionHandler handler：拒绝策略
+
+![](.img/multiT.webp)
+
+
+![](.img/ThreadPool1.gif)
+
+1. 开始时，当 workCount < corePoolSize 时，通过创建新的 Worker 来执行任务。
+
+2. 当 workCount >= corePoolSize 就停止创建新线程，把任务直接丢到队列里。
+
+3. 但当队列已满且仍然 workCount < maximumPoolSize 时，不再直接走拒绝策略，而是创建非核心线程，直到 workCount = maximumPoolSize，再走拒绝策略。
+
+这样 corePoolSize 就负责平时大多数情况所需要的工作线程数，而 maximumPoolSize 就负责在高峰期临时扩充工作线程数。
+
+当长时间没有任务提交时，核心线程与非核心线程都一直空跑着，浪费资源。我们可以给非核心线程设定一个超时时间 keepAliveTime，当这么长时间没能从队列里获取任务时，就不再等了，销毁线程。
+
+![](.img/ThreadPool2.gif)
+
+线程池在 QPS 高峰时可以**临时扩容**，QPS 低谷时又可以**及时回收**线程（非核心线程）而不至于浪费资源
+
+
 #### ThreadLocl
 在线程内部维护其自己的变量，别的线程不可见。
 
@@ -639,6 +687,9 @@ if (!cleanSomeSlots(i, sz) && sz >= threshold)
 
 #### CountDownLatch
 在n个线程执行完之后再继续。
+
+#### AQS
+![](.img/AQS.webp)
 
 ### 对象的创建（new）
 1. 检查该指令的参数在**常量池**是否存在**类的符号引用**，检查该类是否被**加载、解析和初始化**，若没有首先**类加载**。
